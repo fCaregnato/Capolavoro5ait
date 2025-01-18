@@ -9,12 +9,18 @@ Username: capolavoro5ait
 Password: Tv8uBu6WSH5B
 
 ## come scaricare il codice
-### accedere a 
+### accedere allo spazio per il proggetto (desktop)
+cd /percorso/per/desktop
 
 ### scaricare con link da git
 git clone https...
 
-## dopo modifiche in file
+## accedi alla cartella clonata
+cd /percorso
+
+# se stai lavorando di nuovo alla cartella fai prima git pull per aggiornare
+
+## dopo modifiche in file (sempre da dentro la cartella)
 git status
 
 ### pubblicare le modifiche

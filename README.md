@@ -24,9 +24,18 @@ cd /percorso
 git status
 
 ### pubblicare le modifiche
-git commit -m '"<messaggio con le modifiche>"'
+git commit -m "messaggio con le modifiche"
 
 git push
+
+# account attivi nel database
+### admin
+name: admin
+password: admin123
+
+### dummy
+name: dummy
+password: dummy
 
 
 

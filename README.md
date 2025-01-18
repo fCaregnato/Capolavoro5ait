@@ -24,9 +24,11 @@ cd /percorso
 git status
 
 ### pubblicare le modifiche
+git add .
+
 git commit -m "messaggio con le modifiche"
 
-git push
+git push origin main
 
 # account attivi nel database
 ### admin

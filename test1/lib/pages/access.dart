@@ -77,6 +77,7 @@ class _LoginPageState extends State<LoginPage> {
       height: mediaSize.height * 0.732,
       child: Card(
         color: Colors.white.withAlpha(90),
+        margin: EdgeInsets.all(0),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30),

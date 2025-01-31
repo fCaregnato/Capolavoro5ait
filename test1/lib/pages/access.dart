@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:test1/pages/home.dart';
+import 'package:test1/custom.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -103,12 +104,12 @@ class _LoginPageState extends State<LoginPage> {
             fontWeight: FontWeight.w800,
           ),
         ),
-        _buildGreyText("Please log in with your credentials"),
+        buildGreyText("Please log in with your credentials"),
         const SizedBox(height: 50),
-        _buildGreyText("Email or username"),
+        buildGreyText("Email or username"),
         _buildInputField(emailController, isPassword: false),
         const SizedBox(height: 30),
-        _buildGreyText("Password"),
+        buildGreyText("Password"),
         _buildInputField(passwordController, isPassword: true),
         const SizedBox(height: 10),
         _buildRememberForgot(),
@@ -116,15 +117,6 @@ class _LoginPageState extends State<LoginPage> {
         _buildLoginButton(),
         _buildSigninButton(),
       ],
-    );
-  }
-
-  Widget _buildGreyText(String text) {
-    return Text(
-      text,
-      style: TextStyle(
-        color: Colors.blueGrey[900],
-      ),
     );
   }
 
@@ -174,12 +166,12 @@ class _LoginPageState extends State<LoginPage> {
                 });
               },
             ),
-            _buildGreyText("Remember me"),
+            buildGreyText("Remember me"),
           ],
         ),
         TextButton(
           onPressed: () {},
-          child: _buildGreyText("Forgot password"),
+          child: buildGreyText("Forgot password"),
         )
       ],
     );
@@ -212,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
               isSignin = true;
             });
           },
-          child: _buildGreyText("Sign In"),
+          child: buildGreyText("Sign In"),
         ),
       ),
     );
@@ -232,18 +224,18 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildGreyText("Please enter your credentials"),
+                  buildGreyText("Please enter your credentials"),
                   const SizedBox(height: 20),
-                  _buildGreyText("Username"),
+                  buildGreyText("Username"),
                   _buildInputField(userNameController, isPassword: false),
                   const SizedBox(height: 20),
-                  _buildGreyText("Email address"),
+                  buildGreyText("Email address"),
                   _buildInputField(emailController, isPassword: false),
                   const SizedBox(height: 20),
-                  _buildGreyText("Password"),
+                  buildGreyText("Password"),
                   _buildInputField(passwordController, isPassword: true),
                   const SizedBox(height: 20),
-                  _buildGreyText("Confirm password"),
+                  buildGreyText("Confirm password"),
                   _buildInputField(confirmPasswordController, isPassword: true),
                   const SizedBox(height: 20),
                 ],

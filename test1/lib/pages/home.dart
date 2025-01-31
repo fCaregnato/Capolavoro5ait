@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:test1/pages/navPages/nav_home.dart';
+import 'package:test1/pages/navPages/nav_info.dart';
+import 'package:test1/pages/navPages/nav_profile.dart';
+import 'package:test1/pages/navPages/nav_settings.dart';
 
 class HomePage extends StatefulWidget {
-  final String username; // Passiamo il nome utente
+  final String username;
 
   const HomePage({super.key, required this.username});
 
@@ -11,24 +15,24 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Size mediaSize;
-  int _currentIndex = 0; // Indice corrente per la BottomNavigationBar
+  int _currentIndex = 0;
 
-  // Lista delle schermate
   final List<Widget> _pages = [];
 
   @override
   void initState() {
     super.initState();
     _pages.addAll([
-      _buildHomePage(),
-      _buildLocksPage(),
-      _buildProfilePage(),
+      HomePageWidget(username: widget.username),
+      InfoPageWidget(),
+      SettingsPageWidget(),
+      ProfilePageWidget(username: widget.username),
     ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    mediaSize = MediaQuery.of(context).size; // Ottieni la dimensione dello schermo
+    mediaSize = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -48,31 +52,36 @@ class _HomePageState extends State<HomePage> {
           title: const Text('Locks&go'),
           leading: const Icon(Icons.lock),
           centerTitle: false,
-          backgroundColor: Colors.white.withAlpha(80), // Rendi la barra dell'app trasparente
+          backgroundColor: Colors.white.withAlpha(80),
           elevation: 0,
         ),
-        body: _pages[_currentIndex], // Mostra la schermata selezionata
+        body: _pages[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
           currentIndex: _currentIndex,
           onTap: (index) {
             setState(() {
-              _currentIndex = index; // Cambia schermata
+              _currentIndex = index;
             });
           },
           backgroundColor: Colors.white.withAlpha(150),
           selectedItemColor: Colors.orangeAccent,
-          unselectedItemColor: Colors.grey,
+          unselectedItemColor: Colors.blueGrey[900],
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.lock),
-              label: 'Locks',
+              icon: Icon(Icons.info_outline),
+              label: 'Info',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: Icon(Icons.settings),
+              label: 'Settings',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_circle),
               label: 'Profile',
             ),
           ],
@@ -80,47 +89,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  // Schermata Home
-  Widget _buildHomePage() {
-    return Center(
-      child: Text(
-        'Ciao ${widget.username}, questa è la tua homepage!',
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  // Schermata Locks
-  Widget _buildLocksPage() {
-    return Center(
-      child: Text(
-        'Gestisci i tuoi Locks qui!',
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  // Schermata Profile
-  Widget _buildProfilePage() {
-    return Center(
-      child: Text(
-        'Profilo di ${widget.username}',
-        style: const TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
 }
-

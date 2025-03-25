@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:test1/pages/navPages/nav_home.dart';
+import 'package:test1/pages/navPages/navHome/nav_home.dart';
 import 'package:test1/pages/navPages/nav_info.dart';
 import 'package:test1/pages/navPages/nav_profile.dart';
 import 'package:test1/pages/navPages/nav_settings.dart';
 
 class HomePage extends StatefulWidget {
   final String username;
+  final String password;
 
-  const HomePage({super.key, required this.username});
+  const HomePage({super.key, required this.username, required this.password});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -23,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _pages.addAll([
-      HomePageWidget(username: widget.username),
+      HomePageWidget(username: widget.username, password: widget.password),
       InfoPageWidget(),
       SettingsPageWidget(),
       ProfilePageWidget(username: widget.username),

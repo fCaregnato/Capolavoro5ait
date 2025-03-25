@@ -302,7 +302,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Login Function
+
 // Login Function
   Future<void> loginUser() async {
     String url = 'https://capolavoro5ait.altervista.org/api.php?action=login';
@@ -312,7 +312,6 @@ class _LoginPageState extends State<LoginPage> {
       'username': emailController.text, // Can be username or email
       'password': passwordController.text,
     };
-
     try {
       // Send the POST request
       final response = await http.post(
@@ -328,13 +327,15 @@ class _LoginPageState extends State<LoginPage> {
           
           // Recupera il nome utente dalla risposta
           String username = data['data']['username'];
+          String password = data['data']['password'];
 
           if (!mounted) return; // Check if the widget is still mounted
           // Passa il nome utente alla HomePage
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomePage(username: username)),
+            MaterialPageRoute(builder: (context) => HomePage(username: username, password: password)),
           );
+
         } else {
           debugPrint('Error: ${data['message']}');
           if (!mounted) return;
@@ -379,12 +380,13 @@ class _LoginPageState extends State<LoginPage> {
 
           // Recupera il nome utente dalla risposta
           String username = data['data']['username'];
+          String password = data['data']['password'];
           
           if (!mounted) return; // Check if the widget is still mounted
           // Navigate to the LoginPage or HomePage
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomePage(username: username,)),
+            MaterialPageRoute(builder: (context) => HomePage(username: username, password: password)),
           );
         } else {
           debugPrint('Error: ${data['message']}');
@@ -406,30 +408,40 @@ class _LoginPageState extends State<LoginPage> {
 
 
   Future<void> _showMyDialog(String message) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Registration Status'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(message),  // Display the dynamic message here
-              ],
-            ),
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text(
+          'Registration Status',
+          style: TextStyle(color: Colors.black), // White text for title
+        ),
+        backgroundColor: const Color.fromARGB(178, 244, 67, 54), // Red background for the dialog
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text(
+                message, // Display the dynamic message here
+                style: const TextStyle(color: Color.fromARGB(255, 29, 29, 29)), // White text for message
+              ),
+            ],
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text(
+              'OK',
+              style: TextStyle(color: Colors.black), // White text for the button
             ),
-          ],
-        );
-      },
-    );
-  }
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
 }

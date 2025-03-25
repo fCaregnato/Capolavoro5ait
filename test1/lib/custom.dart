@@ -1,4 +1,3 @@
-// lib/custom_widgets.dart
 import 'package:flutter/material.dart';
 
 // Widget riutilizzabile per testo grigio
@@ -10,3 +9,5 @@ Widget buildGreyText(String text) {
     ),
   );
 }
+
+

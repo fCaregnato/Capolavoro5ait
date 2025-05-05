@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class LockCard extends StatelessWidget {
   final Map<String, dynamic> lock;
-  final Map<String, dynamic> config;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onTap;
@@ -10,7 +9,6 @@ class LockCard extends StatelessWidget {
   const LockCard({
     super.key,
     required this.lock,
-    required this.config,
     required this.onEdit,
     required this.onDelete,
     required this.onTap,
@@ -22,18 +20,22 @@ class LockCard extends StatelessWidget {
       padding: const EdgeInsets.all(12.0),
       child: GestureDetector(
         onTap: onTap,
+        child: Container(
         child: Card(
           color: Colors.white.withAlpha(90),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
+            side: lock['favourites'] == 1
+                ? BorderSide(color: Colors.amber, width: 7) // Golden border if favourite
+                : BorderSide.none, // No border if not favourite
           ),
           child: Stack(
             children: [
               ClipPath(
                 clipper: VerticalDiagonalClipper(),
                 child: Container(
-                  color: Colors.blue,
+                  color: Color(int.parse("0xFF${lock['color']}")),
                   width: double.infinity,
                   height: MediaQuery.of(context).size.height / 7.3,
                 ),
@@ -59,7 +61,7 @@ class LockCard extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: Text(
-                        lock['description'] ?? "",
+                        lock['text'] ?? "",
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -114,6 +116,7 @@ class LockCard extends StatelessWidget {
           ),
         ),
       ),
+      )
     );
   }
 }
@@ -142,11 +145,13 @@ class VerticalDiagonalClipper extends CustomClipper<Path> {
 class LockConfigEditDialog extends StatefulWidget {
   final Map<String, dynamic> lock;
   final Function(Map<String, dynamic>) onSave;
+  final bool isNew;
 
   const LockConfigEditDialog({
     Key? key,
     required this.lock,
     required this.onSave,
+    required this.isNew,
   }) : super(key: key);
 
   @override
@@ -155,38 +160,55 @@ class LockConfigEditDialog extends StatefulWidget {
 
 class LockConfigEditDialogState extends State<LockConfigEditDialog> {
   late TextEditingController textController;
+  late TextEditingController name;
   bool favourite = false;
   String selectedColor = "";
 
-  final List<String> predefinedColors = [
-    "Red",
-    "Blue",
-    "Green",
-    "Yellow",
-    "Orange",
-    "Purple",
-    "Custom"
-  ];
+  final Map<String, String> predefinedColors = {
+    "Red": "D0312D",
+    "Blue": "0492C2",
+    "Green": "00ab41",
+    "Yellow": "FFDF00",
+    "Purple": "D05FAD",
+  };
+
+  late final Map<String, String> hexToColorMap;
 
   @override
   void initState() {
     super.initState();
-    selectedColor = widget.lock['color'] ?? "Red";
+
+    // Reverse the map to enable hex-to-name lookup
+    hexToColorMap = {for (var entry in predefinedColors.entries) entry.value: entry.key};
+
+    // Get color name from hex value
+    String hexColor = widget.lock['color'] ?? "D0312D"; // Default to Red if null
+    selectedColor = hexToColorMap[hexColor] ?? "Custom"; // Use hexToColorMap for lookup
+
+    name = TextEditingController(text: widget.lock['esp_name'] ?? "");
     textController = TextEditingController(text: widget.lock['text'] ?? "");
-    favourite = widget.lock['favourite'] ?? false;
+    favourite = widget.lock['favourites'] == 1;
   }
 
   @override
   void dispose() {
     textController.dispose();
+    name.dispose();
     super.dispose();
   }
 
   void _saveChanges() {
+    // Convert color name to hex before saving
+    String hexColor = predefinedColors[selectedColor] ?? selectedColor;
+
+
     Map<String, dynamic> updatedLock = {
-      'color': selectedColor,
+      'name': name.text,
+      'color': hexColor, // Save as hex
       'text': textController.text,
-      'favourite': favourite,
+      'favourites': favourite ? 1 : 0,
+      'user_id': widget.lock['user_id'],
+      'lock_id': widget.lock['lock_id'],
     };
 
     widget.onSave(updatedLock);
@@ -204,11 +226,19 @@ class LockConfigEditDialogState extends State<LockConfigEditDialog> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Edit Lock Configuration', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            widget.isNew ? 'Create New Lock' : 'Edit Lock Configuration',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+
+          TextField(
+            controller: name,
+            decoration: InputDecoration(labelText: 'Description'),
+          ),
 
           DropdownButtonFormField<String>(
-            value: predefinedColors.contains(selectedColor) ? selectedColor : "Custom",
-            items: predefinedColors.map((color) {
+            value: predefinedColors.containsKey(selectedColor) ? selectedColor : "Custom",
+            items: predefinedColors.keys.map((color) {
               return DropdownMenuItem(
                 value: color,
                 child: Text(color),
@@ -217,30 +247,19 @@ class LockConfigEditDialogState extends State<LockConfigEditDialog> {
             onChanged: (value) {
               setState(() {
                 selectedColor = value ?? "Red";
+                widget.lock['color'] = predefinedColors[selectedColor] ?? selectedColor;
               });
             },
             decoration: InputDecoration(labelText: 'Color'),
           ),
-
-          if (selectedColor == "Custom")
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: TextField(
-                decoration: InputDecoration(labelText: 'Custom Color'),
-                onChanged: (value) {
-                  setState(() {
-                    selectedColor = value;
-                  });
-                },
-              ),
-            ),
 
           SizedBox(height: 12),
           TextField(
             controller: textController,
             decoration: InputDecoration(labelText: 'Description'),
           ),
-
+          SizedBox(height: 12),
+          
           Row(
             children: [
               Text('Favourite'),
@@ -274,7 +293,7 @@ class LockConfigEditDialogState extends State<LockConfigEditDialog> {
   }
 }
 
-void showEditDialog(BuildContext context, Map<String, dynamic> lock, Function(Map<String, dynamic>) onSave) {
+void showEditDialog(BuildContext context, Map<String, dynamic> lock, Function(Map<String, dynamic>) onSave, isNew) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -289,7 +308,7 @@ void showEditDialog(BuildContext context, Map<String, dynamic> lock, Function(Ma
           top: 16,
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: LockConfigEditDialog(lock: lock, onSave: onSave),
+        child: LockConfigEditDialog(lock: lock, onSave: onSave, isNew: isNew,),
       );
     },
   );

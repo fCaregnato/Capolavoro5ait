@@ -11,11 +11,12 @@ class ApiService {
         Uri.parse(apiUrl),
         body: {'username': username, 'password': password},
       );
+      debugPrint(response.body);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         if (data['status'] == 'success' && data['data'] != null && data['data']['locks'] is List) {
-          return data['data']['locks'];
+          return List<Map<String, dynamic>>.from(data['data']['locks']);
         } else {
           debugPrint('No locks found or invalid response structure');
         }
@@ -28,29 +29,39 @@ class ApiService {
     return []; // Return an empty list if there's any issue
   }
 
-  // Updating or adding the lock configuration
-  static Future<List<Map<String, dynamic>>> fetchLockConfigs(String userId, String espId, String color, String espName, bool favourite, String text) async {
-    String apiUrl = 'https://capolavoro5ait.altervista.org/api.php?action=lockConfig'; // Ensure this endpoint is correct
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        body: {'user_id': userId, 'esp_id': espId, 'color': color, 'esp_name': espName, 'favourite': favourite, 'text': text},
-      );
+static Future<void> updateLockConfig(Map<String, dynamic> lock) async {
+  String apiUrl = 'https://capolavoro5ait.altervista.org/api.php?action=lockConfig';
+  
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        if (data['status'] == 'success' && data['data'] != null && data['data']['configs'] is List) {
-          return List<Map<String, dynamic>>.from(data['data']['configs']);
-        } else {
-          debugPrint('No configurations found or invalid response structure');
-        }
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      body: {
+        'user_id': lock['user_id'].toString(),
+        'esp_id': lock['lock_id'].toString(),
+        'color': lock['color'] ?? '',
+        'favourite': (lock['favourites'] ?? 0).toString(),
+        'text': lock['text'] ?? '',
+        'esp_name': lock['name'] ?? '',
+      },
+    );
+
+    debugPrint("aggiornato");
+    debugPrint(lock['favourites'].toString());
+
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      if (data['status'] == 'success') {
+        debugPrint('Configurazione aggiornata con successo');
       } else {
-        debugPrint('Failed to load lock configurations with status: ${response.statusCode}');
+        debugPrint('Failed to update lock configuration: ${data['message']}');
       }
-    } catch (e) {
-      debugPrint('Error fetching lock configurations: $e');
+    } else {
+      debugPrint('Failed to update lock configuration with status: ${response.statusCode}');
     }
-    return []; // Return an empty list if there's any issue
+  } catch (e) {
+    debugPrint('Error updating lock configuration: $e');
   }
-
+}
 }

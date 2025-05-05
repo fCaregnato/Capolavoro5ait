@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          title: const Text('Locks&go'),
+          title: const Text('LockWave'),
           leading: const Icon(Icons.lock),
           centerTitle: false,
           backgroundColor: Colors.white.withAlpha(80),
